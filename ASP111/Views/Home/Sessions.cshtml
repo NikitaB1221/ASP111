@@ -1,0 +1,13 @@
+﻿﻿@{
+    ViewData["Title"] = "Sessions";
+}
+
+<div class="text-center">
+    <h1 class="display-4">Сессии</h1>
+</div>
+
+<p>
+    Данные в сессии: @ViewData["StoredValue"]<br/>
+    <a asp-action="SetSession">Установить данные</a><br/>
+    <a asp-action="RemoveSession">Удалить данные</a>
+</p>

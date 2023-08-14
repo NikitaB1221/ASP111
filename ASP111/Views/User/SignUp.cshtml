@@ -1,0 +1,204 @@
+﻿@* заявляем только тип модели, реально переданный объект будет доступен
+под именем Model / @Model  *@
+@model ASP111.Models.User.SignUpViewModel
+@{
+    ViewData["Title"] = "SignUp";
+}
+
+<div class="text-center">
+    <h1 class="display-4">User registration</h1>
+</div>
+
+@(Model.FormModel == null ? "First entry" : "Data transferred")
+
+@if (TempData["SuccessMessage"] != null)
+{
+    <div class="alert alert-success">
+        @TempData["SuccessMessage"]
+    </div>
+}
+
+<div class="row">
+    <div class="col col-8">
+        <form asp-action="SignUp" enctype="multipart/form-data" method="post">
+
+            @{
+                string validClass = Model.FormModel == null ? ""
+                : Model.LoginMessage == null ? "is-valid" : "is-invalid";
+            }
+            @if (TempData["SuccessMessage"] != null)
+            {
+                validClass = "";
+            }
+
+            <label for="user-login" class="form-label">Login</label>
+            <div class="input-group mb-3">
+                <span class="input-group-text py-0 px-2"
+                      id="user-login-addon"><i class="bi-person fs-bi"></i></span>
+                <input type="text" class="form-control @validClass"
+                       id="user-login" name="user-login"
+                       placeholder="Enter login"
+                       value="@Model.FormModel?.Login"
+                       aria-describedby="user-login-addon">
+                @if (Model.LoginMessage != null)
+                {
+                    <div class="invalid-feedback">
+                        @Model.LoginMessage
+                    </div>
+                }
+            </div>
+
+            @{
+                validClass = Model.FormModel == null ? ""
+                : Model.PasswordMessage == null ? "is-valid" : "is-invalid";
+            }
+            @if (TempData["SuccessMessage"] != null)
+            {
+                validClass = "";
+            }
+            <label for="user-password" class="form-label">Password</label>
+            <div class="input-group mb-3">
+                <span class="input-group-text py-0 px-2"
+                      id="user-password-addon"><i class="bi-lock fs-bi"></i></span>
+                <input type="password" class="form-control @validClass"
+                       id="user-password" name="user-password"
+                       placeholder="Enter password"
+                       aria-describedby="user-password-addon">
+                @if (Model.PasswordMessage != null)
+                {
+                    <div class="invalid-feedback">
+                        @Model.PasswordMessage
+                    </div>
+                }
+            </div>
+
+            @{
+                validClass = Model.FormModel == null ? ""
+                : Model.RepeatMessage == null ? "is-valid" : "is-invalid";
+            }
+            @if (TempData["SuccessMessage"] != null)
+            {
+                validClass = "";
+            }
+            <label for="user-repeat" class="form-label">Repeat Password</label>
+            <div class="input-group mb-3">
+                <span class="input-group-text py-0 px-2"
+                      id="user-repeat-addon"><i class="bi-unlock fs-bi"></i></span>
+                <input type="password" class="form-control @validClass"
+                       id="user-repeat" name="user-repeat"
+                       placeholder="Repeat Password"
+                       aria-describedby="user-repeat-addon">
+                @if (Model.RepeatMessage != null)
+                {
+                    <div class="invalid-feedback">
+                        @Model.RepeatMessage
+                    </div>
+                }
+            </div>
+
+
+            @{
+                validClass = Model.FormModel == null ? ""
+                : Model.RealNameMessage == null ? "is-valid" : "is-invalid";
+            }
+            @if (TempData["SuccessMessage"] != null)
+            {
+                validClass = "";
+            }
+            <label for="user-name" class="form-label">
+                Realname (not necessary)
+            </label>
+            <div class="input-group mb-3">
+                <span class="input-group-text py-0 px-2"
+                      id="user-name-addon"><i class="bi-person fs-bi"></i></span>
+                <input type="text" class="form-control @validClass"
+                       id="user-name" name="user-name"
+                       placeholder="The name is used to correspond with you"
+                       value="@Model.FormModel?.RealName"
+                       aria-describedby="user-name-addon">
+                @if (Model.RealNameMessage != null)
+                {
+                    <div class="invalid-feedback">
+                        @Model.RealNameMessage
+                    </div>
+                }
+            </div>
+
+            @{
+                validClass = Model.FormModel == null ? ""
+                : Model.EmailMessage == null ? "is-valid" : "is-invalid";
+            }
+            @if (TempData["SuccessMessage"] != null)
+            {
+                validClass = "";
+            }
+            <label for="user-email" class="form-label">Email</label>
+            <div class="input-group mb-0">
+                <span class="input-group-text py-0 px-2"
+                      id="user-email-addon"><i class="bi-envelope-at fs-bi"></i></span>
+                <input type="email" class="form-control @validClass"
+                       id="user-email" name="user-email"
+                       placeholder="Your email"
+                       value="@Model.FormModel?.Email"
+                       aria-describedby="user-email-addon">
+                @if (Model.EmailMessage != null)
+                {
+                    <div class="invalid-feedback">
+                        @Model.EmailMessage
+                    </div>
+                }
+            </div>
+            <div id="emailHelp" class="form-text mb-3">This information will not be shared without your consent.</div>
+
+            @{
+                validClass = Model.FormModel == null ? ""
+                : Model.AvatarMessage == null ? "is-valid" : "is-invalid";
+            }
+            @if (TempData["SuccessMessage"] != null)
+            {
+                validClass = "";
+            }
+            <label for="user-avatar" class="form-label">Avatar</label>
+            <div class="input-group mb-3">
+                <span class="input-group-text py-0 px-2"
+                      id="user-avatar-addon"><i class="bi-person-circle fs-bi"></i></span>
+                <input type="file" class="form-control custom-file-input @validClass"
+                       id="user-avatar" name="user-avatar"
+                       aria-describedby="user-avatar-addon">
+                @if (Model.AvatarMessage != null)
+                {
+                    <div class="invalid-feedback">
+                        @Model.AvatarMessage
+                    </div>
+                }
+            </div>
+
+            @{
+                validClass = Model.FormModel == null ? ""
+                : Model.ConfirmMessage == null ? "is-valid" : "is-invalid";
+            }
+            @if (TempData["SuccessMessage"] != null)
+            {
+                validClass = "";
+            }
+            <label for="user-confirm" class="form-label">Site rules</label>
+            <div class="input-group mb-3 align-items-center">
+                <span class="input-group-text py-0 px-2"
+                      id="user-confirm-addon"><i class="bi-file-earmark-text fs-bi"></i></span>
+                <div class="form-check mx-3">
+                    <input type="checkbox" class="form-check-input @validClass" id="exampleCheck1"
+                           name="user-confirm" value="true"
+                           aria-describedby="user-check-addon">
+                    <label class="form-check-label" for="exampleCheck1">I agree to abide by the rules of the site</label>
+                    @if (Model.ConfirmMessage != null)
+                    {
+                        <div class="invalid-feedback">
+                            @Model.ConfirmMessage
+                        </div>
+                    }
+                </div>
+                <button type="submit" class="btn btn-primary ms-auto">Зареєструватись</button>
+            </div>
+        </form>
+    </div>
+</div>

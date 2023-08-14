@@ -1,0 +1,58 @@
+﻿@{
+    ViewData["Title"] = "Index";
+}
+<div class="text-center">
+    <h1 class="display-4">Распределительная архитектура. Фронтенд и Бэкенд</h1>
+</div>
+<div class="alert alert-secondary" role="alert">
+    <button class="btn btn-primary" onclick="getClick()">GET</button>
+    <button class="btn btn-success" onclick="postClick()">POST</button>
+    <button class="btn btn-warning" onclick="">PUT</button>
+    <button class="btn btn-danger" onclick="">DELETE</button>
+</div>
+
+<p>
+    Преимущества Razor - в возможности активного формирования контента страницы.
+    НО! Эти возможности сильно ограничены для скриптов: либо все скрипты нужно
+    "окружать" Razor-ом, либо активная подстановка в них не будет осуществляться.
+    Это побуждает разделить архитектуру приложения на две части с четко
+    выраженными областями работы - на сервере или на клиенте (браузере).
+</p>
+<p>
+    Дополнительно, распределенная архитектура упрощает создание дополнительных
+    приложений - десктоп или мобильной версий. Особенности - бэкенд не содержит
+    никаких "оберток" типа HTML и т.п., возвращает только данные, необходимые
+    для отображения, причем те данные, которые могут изменяться (константы
+    можно заложить в клиентские приложения). Традиционно используются популярные
+    форматы передачи данных - JSON (с вариациями) и XML
+</p>
+<p>
+    В веб-приложениях обмен данными происходит при помощи AJAX (асинхронные
+    запросы JS)
+</p>
+
+
+<div class="alert alert-dark" role="alert" id="out"></div>
+<script>
+    function getClick(){
+        fetch("/api/back")
+        .then(response => response.json())
+        .then(j => {
+        out.innerText = JSON.stringify(j);
+        });
+    }
+    function postClick(){
+        fetch("/api/back", {
+            method: "POST",
+            headers: {
+                "Connection": "Close",
+                "Content-Type": "application/json"
+            },
+            body: '{"data": "POST data from JS"}'
+        })
+        .then(response => response.json())
+        .then(j => {
+        out.innerText = JSON.stringify(j);
+        });
+    }
+</script>

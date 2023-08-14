@@ -1,0 +1,65 @@
+﻿@using ASP111.Models.Forum.Section
+@model ASP111.Models.Forum.Section.SectionPageModel
+@{
+    ViewData["Title"] = "Section";
+}
+<div class="text-center">
+    <h1 class="display-4">@Model.Section.Title</h1>
+    <h3>@Model.Section.Description</h3>
+    <h5>By @Model.Section.Author.Name</h5>
+</div>
+
+<div class="row row-cols-1 row-cols-md-4 g-4">
+    @if (Model.Topics != null)
+    {
+        @foreach (TopicViewModel topic in Model.Topics)
+        {
+            @Html.DisplayFor(m=> topic, "TopicTemplate")
+        }
+    }
+</div>
+
+@if (Context.User.Identity?.IsAuthenticated == true)
+{
+    @if (Model.ErrorMessages is not null)
+    {
+        @Model.ErrorMessages["Title"]
+    }
+    <form asp-action="AddTopic" asp-controller="Forum"
+          method="post" enctype="multipart/form-data">
+
+        <label for="topic-title" class="form-label">Title</label>
+        <div class="input-group mb-3">
+            <span class="input-group-text py-0 px-2"
+                  id="topic-title-addon"><i class="bi bi-chat-quote"></i></span>
+            <input type="text" class="form-control"
+                   id="topic-title" name="topic-title"
+                   placeholder="Enter topic title"
+                   aria-describedby="topic-title-addon">
+        </div>
+
+        <label for="topic-description" class="form-label">Description</label>
+        <div class="input-group mb-3">
+            <span class="input-group-text"><i class="bi bi-book"></i></span>
+            <textarea class="form-control" aria-label="With textarea"
+                      id="topic-description" name="topic-description"
+                      placeholder="Enter topic description"></textarea>
+        </div>
+
+        <label for="topic-image" class="form-label">Avatar</label>
+        <div class="input-group mb-3">
+            <span class="input-group-text py-0 px-2"
+                  id="topic-image-addon"><i class="bi bi-card-image"></i></span>
+            <input type="file" class="form-control custom-file-input"
+                   id="topic-image" name="topic-image"
+                   aria-describedby="topic-image-addon">
+        </div>
+
+        <input type="hidden" name="section-id" value="@(Model.Section.Id)">
+
+        <button type="submit" class="btn btn-primary">Add</button>
+    </form>
+}
+
+
+@ViewData["id"]

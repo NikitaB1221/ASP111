@@ -1,0 +1,52 @@
+﻿@model ASP111.Models.Forum.Index.ForumIndexModel
+﻿@{
+    ViewData["Title"] = "Forum";
+}
+<div class="text-center">
+    <h1 class="display-4">Forum</h1>
+</div>
+
+
+<div class="row">
+    <div class="col col-7 offset-1">
+        @foreach (var forumSectionViewModel in Model.Sections)
+        {
+            @Html.DisplayFor(m => forumSectionViewModel, "SectionTemplate")
+        }
+    </div>
+</div>
+@if (Context.User.Identity?.IsAuthenticated == true)
+{
+    <form asp-action="AddSection" asp-controller="Forum"
+          method="post" enctype="multipart/form-data">
+
+        <label for="section-title" class="form-label">Title</label>
+        <div class="input-group mb-3">
+            <span class="input-group-text py-0 px-2"
+                  id="section-title-addon"><i class="bi bi-chat-quote"></i></span>
+            <input type="text" class="form-control"
+                   id="section-title" name="section-title"
+                   placeholder="Enter section title"
+                   aria-describedby="section-title-addon">
+        </div>
+
+        <label for="section-description" class="form-label">Description</label>
+        <div class="input-group mb-3">
+            <span class="input-group-text"><i class="bi bi-book"></i></span>
+            <textarea class="form-control" aria-label="With textarea"
+                      id="section-description" name="section-description"
+                      placeholder="Enter section description"></textarea>
+        </div>
+
+        <label for="section-image" class="form-label">Avatar</label>
+        <div class="input-group mb-3">
+            <span class="input-group-text py-0 px-2"
+                  id="section-image-addon"><i class="bi bi-card-image"></i></span>
+            <input type="file" class="form-control custom-file-input"
+                   id="section-image" name="section-image"
+                   aria-describedby="section-image-addon">
+        </div>
+
+        <button type="submit" class="btn btn-primary">Add</button>
+    </form>
+}

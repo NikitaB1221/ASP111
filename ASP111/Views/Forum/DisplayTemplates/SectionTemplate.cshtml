@@ -1,0 +1,40 @@
+﻿@model ASP111.Models.Forum.Index.ForumSectionViewModel
+<div class="card mb-3">
+    <div class="row g-0">
+        <div class="col-md-2">
+            <img src="@Model.ImageUrl"
+                 class="img-fluid rounded-start"
+                 alt="section">
+        </div>
+        <div class="col-md-10 d-flex flex-column">
+            <div class="card-body">
+                <h5 class="card-title">@Model.Title</h5>
+                <p class="card-text">@Model.Description</p>
+                <p class="card-text"><small class="text-muted">Створено: @Model.CreateDt</small></p>
+            </div>
+            <div class="card-footer ms-auto" style="width:100%">
+                <div class="d-flex  align-items-center" style="gap:1em">
+                    Автор:
+                    <span title="@Model.Author.Email">
+                        @Model.Author.Name
+                    </span>
+                    <div>
+                        <i class="bi bi-hand-thumbs-up"
+                           role="button"
+                           data-rate-item-id="@(Model.Id)"
+                           data-rate-value="1"></i>
+                        <span class="rate rate-positive">@(Model.Likes)</span>
+                    </div>
+                    <div>
+                        <i class="bi bi-hand-thumbs-down"
+                           role="button"
+                           data-rate-item-id="@(Model.Id)"
+                           data-rate-value="-1"></i>
+                        <span class="rate rate-negative">@(Model.Dislikes)</span>
+                    </div>
+                    <a class="btn btn-outline-secondary ms-auto" asp-controller="Forum" asp-action="Section" asp-route-id="@(Model.Id)"><i class="bi bi-arrow-right-square"></i></a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

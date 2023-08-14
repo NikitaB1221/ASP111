@@ -1,0 +1,23 @@
+﻿@using ASP111.Models.Forum.Theme;
+@model CommentViewModel
+
+<div class="col my-4">
+    <div class="card h-100">
+        <div class="card-header d-flex align-items-center">
+            <img src="@Model.Author.Avatar" class="rounded-circle awatars" alt="avatar" />
+            <span>@Model.Author.Login</span>
+            <i class="ms-auto">@Model.CreatedDt</i>
+        </div>
+        <div class="card-body">
+            <p class="card-text">@Model.Content</p>
+        </div>
+        <div class="card-footer ms-auto" style="width:100%">
+            <div class="d-flex align-items-center" style="gap:1em">
+                <i class="bi bi-hand-thumbs-up"></i> 234
+                <i class="bi bi-hand-thumbs-down"></i> 45
+                <button class="btn btn-outline-secondary ms-auto" data-reply="@Model.Id" @if (ViewData["authUser"] is null){@Html.Raw("disabled title='Authorise to reply comments!'")}
+                ><i class="bi bi-reply"></i></button>
+            </div>
+        </div>
+    </div>
+</div>
