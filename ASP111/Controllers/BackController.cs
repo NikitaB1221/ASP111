@@ -18,5 +18,17 @@ namespace ASP111.Controllers
         {
             return new { message = "Hello from POST method" };
         }
+
+        [HttpPut]
+        public object PutThis() 
+        {
+            return new { message = "Hello from PUT method" };
+        }
+
+        [HttpDelete]
+        public object LetsDelete() 
+        {
+            return new { message = "Succesfuly Deleted!" };
+        }
     }
 }

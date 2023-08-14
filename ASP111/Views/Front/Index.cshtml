@@ -7,8 +7,8 @@
 <div class="alert alert-secondary" role="alert">
     <button class="btn btn-primary" onclick="getClick()">GET</button>
     <button class="btn btn-success" onclick="postClick()">POST</button>
-    <button class="btn btn-warning" onclick="">PUT</button>
-    <button class="btn btn-danger" onclick="">DELETE</button>
+    <button class="btn btn-warning" onclick="putCLick()">PUT</button>
+    <button class="btn btn-danger" onclick="deleteCLick()">DELETE</button>
 </div>
 
 <p>
@@ -54,5 +54,31 @@
         .then(j => {
         out.innerText = JSON.stringify(j);
         });
+    }
+    function putCLick(){
+        fetch("/api/back", {
+            method: "PUT",
+            headers: {
+                "Connection": "Close",
+                "Content-Type": "application/json"
+            },
+            body: '{"data": "PUT request for data"}'
+        })
+        .then(response => response.json())
+        .then(j => {
+        out.innerText = JSON.stringify(j);
+        });
+    }
+    function deleteCLick(){
+        fetch("/api/back", {
+            method: "DELETE"
+        })
+            .then(response => response.json())
+            .then(j => {
+                out.innerText = JSON.stringify(j);
+            }).catch(error => {
+                out.parentElement.innerHTML = `Error: ${error}`;
+                console.error('There was an error!', error);
+            });
     }
 </script>
