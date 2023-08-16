@@ -25,7 +25,7 @@
     для отображения, причем те данные, которые могут изменяться (константы
     можно заложить в клиентские приложения). Традиционно используются популярные
     форматы передачи данных - JSON (с вариациями) и XML
-</p> 
+</p>
 <p>
     В веб-приложениях обмен данными происходит при помощи AJAX (асинхронные
     запросы JS)
@@ -34,14 +34,20 @@
 
 <div class="alert alert-dark" role="alert" id="out"></div>
 <script>
-    function getClick(){
-        fetch("api/back?x=10&y=20")
-        .then(response => response.json())
+    function getClick() {
+        fetch("api/back?x=10&y=20", {
+            headers: {
+                "My-Header": "My-Value"
+            },
+            //{
+            //    body: '{"data": "POST data from JS"}'     //  Get не может иметь body
+            //},
+        }).then(response => response.json())
         .then(j => {
-        out.innerText = JSON.stringify(j);
+            out.innerText = JSON.stringify(j);
         });
     }
-    function postClick(){
+    function postClick() {
         fetch("/api/back", {
             method: "POST",
             headers: {
@@ -50,12 +56,12 @@
             },
             body: '{"data": "POST data from JS"}'
         })
-        .then(response => response.json())
-        .then(j => {
-        out.innerText = JSON.stringify(j);
-        });
+            .then(response => response.json())
+            .then(j => {
+                out.innerText = JSON.stringify(j);
+            });
     }
-    function putCLick(){
+    function putCLick() {
         fetch("/api/back", {
             method: "PUT",
             headers: {
@@ -64,12 +70,12 @@
             },
             body: '{"data": "PUT request for data"}'
         })
-        .then(response => response.json())
-        .then(j => {
-        out.innerText = JSON.stringify(j);
-        });
+            .then(response => response.json())
+            .then(j => {
+                out.innerText = JSON.stringify(j);
+            });
     }
-    function deleteCLick(){
+    function deleteCLick() {
         fetch("/api/back", {
             method: "DELETE"
         })

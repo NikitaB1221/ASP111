@@ -10,7 +10,18 @@ namespace ASP111.Controllers
         [HttpGet]
         public object Get( int x, int y) 
         {
-            return new { message = "Hello from GET method", x, y };
+            QueryString QueryString = Request.QueryString;
+            if (!Request.Query.ContainsKey("y"))
+            {
+                Response.StatusCode = StatusCodes.Status400BadRequest;
+                return new { Error = true, Message = "Parameter 'y' is required" };
+            }
+            return new { 
+                message = "Hello from GET method",
+                x,
+                y,
+                my = Request.Headers["My-Header"],
+            };
         }
 
         [HttpPost]
