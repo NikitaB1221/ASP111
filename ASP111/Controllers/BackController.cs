@@ -8,7 +8,7 @@ namespace ASP111.Controllers
     public class BackController : ControllerBase
     {
         [HttpGet]
-        public object Get( int x, int y) 
+        public object Get(int x, int y)
         {
             QueryString QueryString = Request.QueryString;
             if (!Request.Query.ContainsKey("y"))
@@ -16,7 +16,8 @@ namespace ASP111.Controllers
                 Response.StatusCode = StatusCodes.Status400BadRequest;
                 return new { Error = true, Message = "Parameter 'y' is required" };
             }
-            return new { 
+            return new
+            {
                 message = "Hello from GET method",
                 x,
                 y,
@@ -25,21 +26,48 @@ namespace ASP111.Controllers
         }
 
         [HttpPost]
-        public object DoPost() 
+        public object DoPost(PostBody postBody)  //  [FromBody] dynamic postBody
         {
-            return new { message = "Hello from POST method" };
+            return new { message = "Hello from POST method", postBody };
         }
 
         [HttpPut]
-        public object PutThis() 
+        public object PutThis(PutBody putBody, String nd)
         {
-            return new { message = "Hello from PUT method" };
+            QueryString QueryString = Request.QueryString;
+            if (!Request.Query.ContainsKey("nd"))
+            {
+                Response.StatusCode = StatusCodes.Status400BadRequest;
+                return new { Error = true, Message = "Parameter 'nd' is required" };
+            }
+            putBody.Data += $" {nd}";
+            return new { message = $"\"{nd}\" was PUTted", putBody};
         }
 
         [HttpDelete]
-        public object LetsDelete() 
+        public object LetsDelete(String data)
         {
-            return new { message = "Succesfuly Deleted!" };
+            QueryString QueryString = Request.QueryString;
+            if (!Request.Query.ContainsKey("data"))
+            {
+                Response.StatusCode = StatusCodes.Status400BadRequest;
+                return new { Error = true, Message = "Parameter 'data' is required" };
+            }
+
+            return new { target = data, message = "Succesfuly Deleted!"  };
+
         }
+    }
+
+    public class PostBody  //  ORM  ==  C# object for containig JSON object
+    {
+        public String Data { get; set; }  //  property name == JSON obj name
+
+    }
+
+    public class PutBody
+    {
+        public String Data { get; set; }  //  property name == JSON obj name
+
     }
 }

@@ -54,7 +54,7 @@
                 "Connection": "Close",
                 "Content-Type": "application/json"
             },
-            body: '{"data": "POST data from JS"}'
+            body: '{"data": "POST data from JS", "meta": "Meta-data"}'
         })
             .then(response => response.json())
             .then(j => {
@@ -62,7 +62,7 @@
             });
     }
     function putCLick() {
-        fetch("/api/back", {
+        fetch("/api/back?nd= or content", {
             method: "PUT",
             headers: {
                 "Connection": "Close",
@@ -76,14 +76,14 @@
             });
     }
     function deleteCLick() {
-        fetch("/api/back", {
+        fetch("/api/back?data=functionality", {
             method: "DELETE"
         })
             .then(response => response.json())
             .then(j => {
                 out.innerText = JSON.stringify(j);
             }).catch(error => {
-                out.parentElement.innerHTML = `Error: ${error}`;
+                out.innerText = `Error: ${error}`;
                 console.error('There was an error!', error);
             });
     }
