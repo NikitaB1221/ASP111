@@ -8,9 +8,9 @@ namespace ASP111.Controllers
     public class BackController : ControllerBase
     {
         [HttpGet]
-        public object Get() 
+        public object Get( int x, int y) 
         {
-            return new { message = "Hello from GET method" };
+            return new { message = "Hello from GET method", x, y };
         }
 
         [HttpPost]

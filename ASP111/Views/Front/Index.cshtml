@@ -35,7 +35,7 @@
 <div class="alert alert-dark" role="alert" id="out"></div>
 <script>
     function getClick(){
-        fetch("/api/back")
+        fetch("api/back?x=10&y=20")
         .then(response => response.json())
         .then(j => {
         out.innerText = JSON.stringify(j);
