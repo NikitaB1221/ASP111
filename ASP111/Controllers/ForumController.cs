@@ -157,6 +157,7 @@ namespace ASP111.Controllers
                     Title = section.Title,
                     Description = section.Description,
                     CreateDt = section.CreateDt.ToShortDateString(),
+                    ImageUrl = "/img/" + section.ImageUrl,
                     Author = new(section.Author),
                 }
             };
@@ -302,7 +303,7 @@ namespace ASP111.Controllers
                     Title = model.Title,
                     Description = model.Description,
                     CreateDt = DateTime.Now,
-                    ImageUrl = null,
+                    ImageUrl = "/img/" + model.ImageFile.FileName,
                     DeleteDt = null,
                     AuthorId = userId.Value,
                 });
