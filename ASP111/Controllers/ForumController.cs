@@ -285,9 +285,11 @@ namespace ASP111.Controllers
             {
                 if (message != null)
                 {
-                    // есть сообщение об ошибке - 
-                    // сериализуем все сообщения, сохраняем в сессии и
-                    // перенаправляем на Index
+                    HttpContext.Session.SetString(
+                        "AddSectionMessage",
+                        JsonSerializer.Serialize(messages)
+                    );
+                    return RedirectToAction(nameof(Section));
                 }
             }
             // проверяем что пользователь аутентифицирован
