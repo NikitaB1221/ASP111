@@ -1,4 +1,4 @@
-﻿@model ASP111.Models.Forum.Index.ForumSectionViewModel
+﻿ @model ASP111.Models.Forum.Index.ForumSectionViewModel
 <div class="card mb-3">
     <div class="row g-0">
         <div class="col-md-2">
@@ -10,12 +10,14 @@
             <div class="card-body">
                 <h5 class="card-title">@Model.Title</h5>
                 <p class="card-text">@Model.Description</p>
-                <p class="card-text"><small class="text-muted">Створено: @Model.CreateDt</small></p>
+                <p class="card-text"><small class="text-muted">Created: @Model.CreateDt</small></p>
             </div>
             <div class="card-footer ms-auto" style="width:100%">
                 <div class="d-flex  align-items-center" style="gap:1em">
                     Автор:
                     <span title="@Model.Author.Email">
+                        <a asp-controller="User" asp-action="Profile">
+                        <img src="@Model.Author.Avatar" class="awatars rounded-circle"/></a>
                         @Model.Author.Name
                     </span>
                     <div>
