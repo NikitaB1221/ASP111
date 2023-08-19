@@ -4,7 +4,7 @@
     {
         public Guid Id { get; set; }
         public String Title { get; set; } = null!;
-        public String Description { get; set; } = null!;
+        public String? Description { get; set; }
         public String? ImageUrl { get; set; }
         public Guid AuthorId { get; set; }
         public DateTime CreateDt { get; set; }

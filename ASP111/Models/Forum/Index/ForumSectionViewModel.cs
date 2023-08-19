@@ -6,7 +6,7 @@ namespace ASP111.Models.Forum.Index
     {
         public String Id { get; set; }
         public String Title { get; set; } = null!;
-        public String Description { get; set; } = null!;
+        public String? Description { get; set; }
         public String? ImageUrl { get; set; }
         public String CreateDt { get; set; }
         public UserViewModel Author { get; set; } = null!;

@@ -256,7 +256,7 @@ namespace ASP111.Controllers
                         CreateDt = s.CreateDt.ToShortDateString(),
                         ImageUrl = s.ImageUrl == null
                             ? $"/img/S/section{n++}.png"
-                            : $"/img/S/{s.ImageUrl}",
+                            : $"/img/{s.ImageUrl}",
                         Author = new(s.Author),
                         Likes = s.Rates.Count(r => r.Rating > 0),
                         Dislikes = s.Rates.Count(r => r.Rating < 0),
@@ -293,6 +293,16 @@ namespace ASP111.Controllers
                     return RedirectToAction(nameof(Section));
                 }
             }
+
+            String? fName = null;
+            String ext = model.ImageFile is null ? "" : Path.GetExtension(model.ImageFile.FileName);
+
+            if(model.ImageFile is IFormFile) 
+            {
+                fName = Guid.NewGuid().ToString() + ext;
+                using var fstream = new FileStream("wwwroot/img/" + fName, FileMode.Create);
+                model.ImageFile.CopyTo(fstream);
+            }
             // проверяем что пользователь аутентифицирован
             Guid? userId = _authUserService.GetUserId(HttpContext);
             if (userId != null)
@@ -303,7 +313,7 @@ namespace ASP111.Controllers
                     Title = model.Title,
                     Description = model.Description,
                     CreateDt = DateTime.Now,
-                    ImageUrl = "/img/" + model.ImageFile.FileName,
+                    ImageUrl = fName,
                     DeleteDt = null,
                     AuthorId = userId.Value,
                 });
