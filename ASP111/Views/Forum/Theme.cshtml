@@ -24,14 +24,14 @@
 
 
     <form asp-action="AddComment" asp-controller="Forum"
-          method="post" enctype="multipart/form-data">
+    method="post" enctype="multipart/form-data">
 
         <label for="comment-content" class="form-label">Answer</label>
         <div class="input-group mb-3">
             <span class="input-group-text"><i class="bi bi-book"></i></span>
             <textarea class="form-control" aria-label="With textarea"
                       id="comment-content" name="Content"
-                      placeholder="Enter question answer"></textarea>
+                      placeholder="Enter question answer">@(Model.FormModel?.Content ?? "")</textarea>
         </div>
         @if (Model.ErrorMessages is not null)
         {

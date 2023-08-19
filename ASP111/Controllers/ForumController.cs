@@ -65,6 +65,17 @@ namespace ASP111.Controllers
 
                 HttpContext.Session.Remove("AddCommentMessage");
             }
+            if (HttpContext.Session.Keys.Contains("FormData"))
+            {
+                //CommentFormModel formModel = null!;
+                String? data = HttpContext.Session.GetString("FormData");
+                if (data is not null)
+                {
+                    model.FormModel = System.Text.Json.JsonSerializer
+                        .Deserialize<CommentFormModel>(data)!;
+                }
+                HttpContext.Session.Remove("FormData");
+            }
 
             return View(model);
         }
@@ -81,6 +92,9 @@ namespace ASP111.Controllers
                         "AddCommentMessage",
                         JsonSerializer.Serialize(messages)
                     );
+
+                    HttpContext.Session.SetString("FormData", System.Text.Json.JsonSerializer.Serialize(formModel));
+
                     return RedirectToAction(nameof(Theme), new { id = formModel.ThemeId });
                 }
 
