@@ -280,7 +280,6 @@ namespace ASP111.Controllers
         }
 
 
-
         private SignUpViewModel ValidateSignUpForm(SignUpFormModel formModel)
         {
             SignUpViewModel viewModel = new();

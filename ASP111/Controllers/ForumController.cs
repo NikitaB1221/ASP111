@@ -5,6 +5,7 @@ using ASP111.Models.Forum.Index;
 using ASP111.Models.Forum.Section;
 using ASP111.Models.Forum.Theme;
 using ASP111.Models.Forum.Topic;
+using ASP111.Models.User;
 using ASP111.Services.AuthUser;
 using ASP111.Services.Validation;
 using Microsoft.AspNetCore.Mvc;
@@ -54,6 +55,17 @@ namespace ASP111.Controllers
             {
                 ViewData["authUser"] = new UserViewModel(_dataContext.Users.Find(AuthUserId.Value)!);
             }
+            if (HttpContext.Session.Keys.Contains("AddCommentMessage"))
+            {
+                model.ErrorMessages =
+                    JsonSerializer.Deserialize<Dictionary<String, String?>>(
+                        HttpContext.Session.GetString("AddCommentMessage")!);
+
+
+
+                HttpContext.Session.Remove("AddCommentMessage");
+            }
+
             return View(model);
         }
 
@@ -66,7 +78,7 @@ namespace ASP111.Controllers
                 if (message != null)  // есть сообщение об ошибке
                 {
                     HttpContext.Session.SetString(
-                        "AddTopicMessage",
+                        "AddCommentMessage",
                         JsonSerializer.Serialize(messages)
                     );
                     return RedirectToAction(nameof(Theme), new { id = formModel.ThemeId });
@@ -75,22 +87,24 @@ namespace ASP111.Controllers
                 Guid? userId = _authUserService.GetUserId(HttpContext);
                 if (userId != null)
                 {
-                    DateTime DT = DateTime.Now;
-                    _dataContext.Comments.Add(new()
-                    {
-                        Id = Guid.NewGuid(),
-                        AuthorId = userId.Value,
-                        Content = formModel.Content,
-                        ThemeId = formModel.ThemeId,
-                        CreatedDt = DT,
-                        ReplyId = formModel.ReplyId,
-                    });
-                    _dataContext.SaveChanges();
+
+                        DateTime DT = DateTime.Now;
+                        _dataContext.Comments.Add(new()
+                        {
+                            Id = Guid.NewGuid(),
+                            AuthorId = userId.Value,
+                            Content = formModel.Content,
+                            ThemeId = formModel.ThemeId,
+                            CreatedDt = DT,
+                            ReplyId = formModel.ReplyId,
+                        });
+                        _dataContext.SaveChanges();
+                    
+
                 }
             }
             return RedirectToAction(nameof(Theme), new { id = formModel.ThemeId });
         }
-
 
         public IActionResult Topic([FromRoute] Guid id)
         {

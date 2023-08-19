@@ -21,10 +21,7 @@
 
 @if (Context.User.Identity?.IsAuthenticated == true)
 {
-    if (Model.ErrorMessages != null)
-    {
-        <b>@Model.ErrorMessages["Comment"]</b>
-    }
+
 
     <form asp-action="AddComment" asp-controller="Forum"
           method="post" enctype="multipart/form-data">
@@ -36,6 +33,15 @@
                       id="comment-content" name="Content"
                       placeholder="Enter question answer"></textarea>
         </div>
+        @if (Model.ErrorMessages is not null)
+        {
+            @if (Model.ErrorMessages.Keys.Contains("Content"))
+            {
+                @Model.ErrorMessages["Content"]
+                ;
+            }
+        }
+        <br>
 
         <input type="hidden" name="ThemeId" value="@(Model.Theme.Id)" />
         <input type="hidden" name="ReplyId" value="" />
