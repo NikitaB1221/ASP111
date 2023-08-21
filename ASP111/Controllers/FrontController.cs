@@ -8,5 +8,10 @@ namespace ASP111.Controllers
         {
             return View();
         }
+
+        public ViewResult Forum() 
+        {
+            return View();
+        }
     }
 }

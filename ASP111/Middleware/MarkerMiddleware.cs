@@ -18,7 +18,7 @@ namespace ASP111.Middleware
 
         public async Task InvokeAsync(HttpContext context, DataContext dataContext)
         {
-            context.Items.Add("marker", $"Users: {dataContext.Users.Count()}, requests: { ++ _cnt}");
+            context.Items.Add("marker", $"Users: N/w, requests: { ++ _cnt}");
             if (context.Request.Method.Equals("GET", StringComparison.OrdinalIgnoreCase))
             {
                 ++getRs;

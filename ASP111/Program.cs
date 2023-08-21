@@ -50,7 +50,7 @@ builder.Services.AddDbContext<DataContext>(options =>options.UseMySql(connection
             .MigrationsHistoryTable(tableName: HistoryRepository.DefaultTableName,schema: "asp111")
             .SchemaBehavior(MySqlSchemaBehavior.Translate,
             (schema, table) => $"{schema}_{table}")
-));
+), ServiceLifetime.Transient);
 
 var app = builder.Build();
 
