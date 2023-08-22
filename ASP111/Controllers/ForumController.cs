@@ -81,7 +81,7 @@ namespace ASP111.Controllers
         }
 
         [HttpPost]
-        public RedirectToActionResult AddComment([FromForm]CommentFormModel formModel)
+        public RedirectToActionResult AddTheme(ThemeFormModel formModel)
         {
             var messages = _validationService.ErrorMessages(formModel);
             foreach (var (key, message) in messages)
@@ -89,81 +89,37 @@ namespace ASP111.Controllers
                 if (message != null)  // есть сообщение об ошибке
                 {
                     HttpContext.Session.SetString(
-                        "AddCommentMessage",
+                        "AddThemeMessage",
                         JsonSerializer.Serialize(messages)
                     );
-
-                    HttpContext.Session.SetString("FormData", System.Text.Json.JsonSerializer.Serialize(formModel));
-
-                    return RedirectToAction(nameof(Theme), new { id = formModel.ThemeId });
+                    return RedirectToAction(nameof(Topic), new { id = formModel.TopicId });
                 }
-
-                Guid? userId = _authUserService.GetUserId(HttpContext);
-                if (userId != null)
+            }
+            // проверяем что пользователь аутентифицирован
+            Guid? userId = _authUserService.GetUserId(HttpContext);
+            if (userId != null)
+            {
+                Guid themeId = Guid.NewGuid();
+                DateTime DT = DateTime.Now;
+                _dataContext.Themes.Add(new()
                 {
-
-                        DateTime DT = DateTime.Now;
-                        _dataContext.Comments.Add(new()
-                        {
-                            Id = Guid.NewGuid(),
-                            AuthorId = userId.Value,
-                            Content = formModel.Content,
-                            ThemeId = formModel.ThemeId,
-                            CreatedDt = DT,
-                            ReplyId = formModel.ReplyId,
-                        });
-                        _dataContext.SaveChanges();
-                    
-
-                }
+                    Id = themeId,
+                    AuthorId = userId.Value,
+                    TopicId = formModel.TopicId,
+                    Title = formModel.Title,
+                    CreatedDt = DT,
+                });
+                _dataContext.Comments.Add(new()
+                {
+                    Id = Guid.NewGuid(),
+                    AuthorId = userId.Value,
+                    Content = formModel.Content,
+                    ThemeId = themeId,
+                    CreatedDt= DT,
+                });
+                _dataContext.SaveChanges();
             }
-            return RedirectToAction(nameof(Theme), new { id = formModel.ThemeId });
-        }
-
-        public IActionResult Topic([FromRoute] Guid id)
-        {
-            var topic = _dataContext
-                .Topics
-                .Include(t => t.Author)
-                .FirstOrDefault(t => t.Id == id);
-
- 
-
-            if (topic == null)
-            {
-                return NotFound();
-            }
-
- 
-
-            TopicPageModel model = new()
-            {
-                Topic = new(topic)
-            };
-            model.Themes = _dataContext
-                .Themes
-                .Include(t => t.Author)
-                .Include(t => t.Comments)
-                .Where(t => t.TopicId == topic.Id && t.DeleteDt == null)
-                .Select(t => new ThemeViewModel(t))
-                .ToList();
-
- 
-
-            if (HttpContext.Session.Keys.Contains("AddThemeMessage"))
-            {
-                model.ErrorMessages =
-                    JsonSerializer.Deserialize<Dictionary<String, String?>>(
-                        HttpContext.Session.GetString("AddThemeMessage")!);
-
- 
-
-                HttpContext.Session.Remove("AddThemeMessage");
-            }
-
- 
-
-            return View(model);
+            return RedirectToAction(nameof(Topic), new { id = formModel.TopicId });
         }
 
         public IActionResult Section([FromRoute] Guid id)
@@ -209,6 +165,88 @@ namespace ASP111.Controllers
             }).ToList();
 
             return View(sectionViewModel);
+        }
+
+        [HttpPost]
+        public RedirectToActionResult AddSection(ForumSectionFormModel model)
+        {
+            var messages = _validationService.ErrorMessages(model);
+            foreach (var (key, message) in messages)
+            {
+                if (message != null)
+                {
+                    HttpContext.Session.SetString(
+                        "AddSectionMessage",
+                        JsonSerializer.Serialize(messages)
+                    );
+                    return RedirectToAction(nameof(Section));
+                }
+            }
+
+            String? fName = null;
+            String ext = model.ImageFile is null ? "" : Path.GetExtension(model.ImageFile.FileName);
+
+            if(model.ImageFile is IFormFile) 
+            {
+                fName = Guid.NewGuid().ToString() + ext;
+                using var fstream = new FileStream("wwwroot/img/" + fName, FileMode.Create);
+                model.ImageFile.CopyTo(fstream);
+            }
+            // проверяем что пользователь аутентифицирован
+            Guid? userId = _authUserService.GetUserId(HttpContext);
+            if (userId != null)
+            {
+                _dataContext.Sections.Add(new()
+                {
+                    Id = Guid.NewGuid(),
+                    Title = model.Title,
+                    Description = model.Description,
+                    CreateDt = DateTime.Now,
+                    ImageUrl = fName,
+                    DeleteDt = null,
+                    AuthorId = userId.Value,
+                });
+                _dataContext.SaveChanges();
+                _logger.LogInformation("Add Section OK");
+            }
+            return RedirectToAction(nameof(Index));
+        }
+
+
+        public IActionResult Topic([FromRoute] Guid id)
+        {
+            var topic = _dataContext
+                .Topics
+                .Include(t => t.Author)
+                .FirstOrDefault(t => t.Id == id);
+
+            if (topic == null)
+            {
+                return NotFound();
+            }
+
+            TopicPageModel model = new()
+            {
+                Topic = new(topic)
+            };
+            model.Themes = _dataContext
+                .Themes
+                .Include(t => t.Author)
+                .Include(t => t.Comments)
+                .Where(t => t.TopicId == topic.Id && t.DeleteDt == null)
+                .Select(t => new ThemeViewModel(t))
+                .ToList();
+
+            if (HttpContext.Session.Keys.Contains("AddThemeMessage"))
+            {
+                model.ErrorMessages =
+                    JsonSerializer.Deserialize<Dictionary<String, String?>>(
+                        HttpContext.Session.GetString("AddThemeMessage")!);
+
+                HttpContext.Session.Remove("AddThemeMessage");
+            }
+
+            return View(model);
         }
 
         [HttpPost]
@@ -307,52 +345,7 @@ namespace ASP111.Controllers
         }
 
         [HttpPost]
-        public RedirectToActionResult AddSection(ForumSectionFormModel model)
-        {
-            var messages = _validationService.ErrorMessages(model);
-            foreach (var (key, message) in messages)
-            {
-                if (message != null)
-                {
-                    HttpContext.Session.SetString(
-                        "AddSectionMessage",
-                        JsonSerializer.Serialize(messages)
-                    );
-                    return RedirectToAction(nameof(Section));
-                }
-            }
-
-            String? fName = null;
-            String ext = model.ImageFile is null ? "" : Path.GetExtension(model.ImageFile.FileName);
-
-            if(model.ImageFile is IFormFile) 
-            {
-                fName = Guid.NewGuid().ToString() + ext;
-                using var fstream = new FileStream("wwwroot/img/" + fName, FileMode.Create);
-                model.ImageFile.CopyTo(fstream);
-            }
-            // проверяем что пользователь аутентифицирован
-            Guid? userId = _authUserService.GetUserId(HttpContext);
-            if (userId != null)
-            {
-                _dataContext.Sections.Add(new()
-                {
-                    Id = Guid.NewGuid(),
-                    Title = model.Title,
-                    Description = model.Description,
-                    CreateDt = DateTime.Now,
-                    ImageUrl = fName,
-                    DeleteDt = null,
-                    AuthorId = userId.Value,
-                });
-                _dataContext.SaveChanges();
-                _logger.LogInformation("Add Section OK");
-            }
-            return RedirectToAction(nameof(Index));
-        }
-
-        [HttpPost]
-        public RedirectToActionResult AddTheme(ThemeFormModel formModel)
+        public RedirectToActionResult AddComment([FromForm]CommentFormModel formModel)
         {
             var messages = _validationService.ErrorMessages(formModel);
             foreach (var (key, message) in messages)
@@ -360,37 +353,35 @@ namespace ASP111.Controllers
                 if (message != null)  // есть сообщение об ошибке
                 {
                     HttpContext.Session.SetString(
-                        "AddThemeMessage",
+                        "AddCommentMessage",
                         JsonSerializer.Serialize(messages)
                     );
-                    return RedirectToAction(nameof(Topic), new { id = formModel.TopicId });
+
+                    HttpContext.Session.SetString("FormData", System.Text.Json.JsonSerializer.Serialize(formModel));
+
+                    return RedirectToAction(nameof(Theme), new { id = formModel.ThemeId });
+                }
+
+                Guid? userId = _authUserService.GetUserId(HttpContext);
+                if (userId != null)
+                {
+
+                        DateTime DT = DateTime.Now;
+                        _dataContext.Comments.Add(new()
+                        {
+                            Id = Guid.NewGuid(),
+                            AuthorId = userId.Value,
+                            Content = formModel.Content,
+                            ThemeId = formModel.ThemeId,
+                            CreatedDt = DT,
+                            ReplyId = formModel.ReplyId,
+                        });
+                        _dataContext.SaveChanges();
+                    
+
                 }
             }
-            // проверяем что пользователь аутентифицирован
-            Guid? userId = _authUserService.GetUserId(HttpContext);
-            if (userId != null)
-            {
-                Guid themeId = Guid.NewGuid();
-                DateTime DT = DateTime.Now;
-                _dataContext.Themes.Add(new()
-                {
-                    Id = themeId,
-                    AuthorId = userId.Value,
-                    TopicId = formModel.TopicId,
-                    Title = formModel.Title,
-                    CreatedDt = DT,
-                });
-                _dataContext.Comments.Add(new()
-                {
-                    Id = Guid.NewGuid(),
-                    AuthorId = userId.Value,
-                    Content = formModel.Content,
-                    ThemeId = themeId,
-                    CreatedDt= DT,
-                });
-                _dataContext.SaveChanges();
-            }
-            return RedirectToAction(nameof(Topic), new { id = formModel.TopicId });
+            return RedirectToAction(nameof(Theme), new { id = formModel.ThemeId });
         }
     }
 }

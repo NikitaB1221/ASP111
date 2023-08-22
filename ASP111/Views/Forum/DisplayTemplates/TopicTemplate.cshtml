@@ -1,16 +1,33 @@
-﻿
+﻿@using ASP111.Services.TopicDateService;
+
 @model ASP111.Models.Forum.Section.TopicViewModel
+
+@functions {
+    private string GetFormattedDateTime(DateTime dateTime)
+    {
+        ITopicDateTimeFormatter formatter = new TopicDateTimeFormatterV1();
+        return formatter.FormatDateTime(dateTime);
+    }
+}
 
 <div class="col">
     <div class="card h-100">
-        <div class="card-header">Header</div>
-        <img src="@Model.ImageUrl" class="rounded-circle w40" alt="avatar" />
+        <div class="card-header ms-auto" style="width:100%">
+            <div class="d-flex align-items-center">
+                <span>Header</span>
+                <span class="ms-auto">@GetFormattedDateTime(DateTime.Parse(Model.CreatedDt))</span>
+            </div>
+        </div>
+        <img src="@Model.ImageUrl" class="w40" alt="avatar" />
         <div class="card-body">
             <h5 class="card-title">@Model.Title</h5>
             <p class="card-text">@Model.Description</p>
         </div>
         <div class="card-footer ms-auto" style="width:100%">
             <div class="d-flex align-items-center" style="gap:1em">
+                <a asp-controller="User" asp-action="Profile">
+                    <img src="@Model.Author.Avatar" class="avatars rounded-circle" />
+                </a>
                 <i class="bi bi-hand-thumbs-up"></i> 234
                 <i class="bi bi-hand-thumbs-down"></i> 45
                 <a class="btn btn-outline-secondary ms-auto"

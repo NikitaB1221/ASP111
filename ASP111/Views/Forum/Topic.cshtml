@@ -56,6 +56,15 @@
                    id="topic-title" name="Title"
                    placeholder="Enter theme title"
                    aria-describedby="topic-title-addon">
+            @if (Model.ErrorMessages is not null)
+            {
+                @if (Model.ErrorMessages.Keys.Contains("Title"))
+                {
+                    <div class="invalid-feedback">
+                        @Model.ErrorMessages["Title"];
+                    </div>
+                }
+            }
         </div>
 
         <label for="topic-description" class="form-label">Question</label>
@@ -64,6 +73,16 @@
             <textarea class="form-control" aria-label="With textarea"
                       id="topic-description" name="Content"
                       placeholder="Enter theme description"></textarea>
+            @if (Model.ErrorMessages is not null)
+            {
+                @if (Model.ErrorMessages.Keys.Contains("Description"))
+                {
+                    <div class="invalid-feedback">
+                        @Model.ErrorMessages["Description"];
+                    </div>
+                }
+            }
+
         </div>
 
         <label for="topic-image" class="form-label">Avatar</label>
