@@ -30,97 +30,6 @@ namespace ASP111.Controllers
             _validationService = validationService;
         }
 
-        //                     <a  asp-route-id="@..." 
-        public IActionResult Theme([FromRoute] Guid id)
-        {
-            var theme = _dataContext
-                .Themes
-                .Include(t => t.Author)
-                .Where(t => t.Id == id && t.DeleteDt == null)
-                .FirstOrDefault();
-
-
-
-            if (theme == null)
-            {
-                return NotFound();
-            }
-            ThemePageModel model = new()
-            {
-                Theme = new(theme),
-                Comments = _dataContext.Comments.Include(c => c.Author).OrderBy(c => c.CreatedDt).Where(c => c.DeleteDt == null && c.ThemeId == id).Select(c => new CommentViewModel(c)).ToList()
-            };
-            Guid? AuthUserId = _authUserService.GetUserId(HttpContext);
-            if (AuthUserId != null)
-            {
-                ViewData["authUser"] = new UserViewModel(_dataContext.Users.Find(AuthUserId.Value)!);
-            }
-            if (HttpContext.Session.Keys.Contains("AddCommentMessage"))
-            {
-                model.ErrorMessages =
-                    JsonSerializer.Deserialize<Dictionary<String, String?>>(
-                        HttpContext.Session.GetString("AddCommentMessage")!);
-
-
-
-                HttpContext.Session.Remove("AddCommentMessage");
-            }
-            if (HttpContext.Session.Keys.Contains("FormData"))
-            {
-                //CommentFormModel formModel = null!;
-                String? data = HttpContext.Session.GetString("FormData");
-                if (data is not null)
-                {
-                    model.FormModel = System.Text.Json.JsonSerializer
-                        .Deserialize<CommentFormModel>(data)!;
-                }
-                HttpContext.Session.Remove("FormData");
-            }
-
-            return View(model);
-        }
-
-        [HttpPost]
-        public RedirectToActionResult AddTheme(ThemeFormModel formModel)
-        {
-            var messages = _validationService.ErrorMessages(formModel);
-            foreach (var (key, message) in messages)
-            {
-                if (message != null)  // есть сообщение об ошибке
-                {
-                    HttpContext.Session.SetString(
-                        "AddThemeMessage",
-                        JsonSerializer.Serialize(messages)
-                    );
-                    return RedirectToAction(nameof(Topic), new { id = formModel.TopicId });
-                }
-            }
-            // проверяем что пользователь аутентифицирован
-            Guid? userId = _authUserService.GetUserId(HttpContext);
-            if (userId != null)
-            {
-                Guid themeId = Guid.NewGuid();
-                DateTime DT = DateTime.Now;
-                _dataContext.Themes.Add(new()
-                {
-                    Id = themeId,
-                    AuthorId = userId.Value,
-                    TopicId = formModel.TopicId,
-                    Title = formModel.Title,
-                    CreatedDt = DT,
-                });
-                _dataContext.Comments.Add(new()
-                {
-                    Id = Guid.NewGuid(),
-                    AuthorId = userId.Value,
-                    Content = formModel.Content,
-                    ThemeId = themeId,
-                    CreatedDt= DT,
-                });
-                _dataContext.SaveChanges();
-            }
-            return RedirectToAction(nameof(Topic), new { id = formModel.TopicId });
-        }
 
         public IActionResult Section([FromRoute] Guid id)
         {
@@ -154,7 +63,7 @@ namespace ASP111.Controllers
                 HttpContext.Session.Remove("AddTopicMessage");
             }
             sectionViewModel.Topics =
-            _dataContext.Topics.Include(t => t.Author).Where(t => t.DeleteDt == null).OrderByDescending(t => t.CreatedDt).AsEnumerable().Select(t => new TopicViewModel()
+            _dataContext.Topics.Include(t => t.Author).Where(t => t.DeleteDt == null && t.SectionId == section.Id).OrderByDescending(t => t.CreatedDt).AsEnumerable().Select(t => new TopicViewModel()
             {
                 Id = t.Id.ToString(),
                 Title = t.Title,
@@ -301,6 +210,99 @@ namespace ASP111.Controllers
 
             return RedirectToAction(nameof(Section), new { id = formModel.SectionId });
         }
+
+        //                     <a  asp-route-id="@..." 
+        public IActionResult Theme([FromRoute] Guid id)
+        {
+            var theme = _dataContext
+                .Themes
+                .Include(t => t.Author)
+                .Where(t => t.Id == id && t.DeleteDt == null)
+                .FirstOrDefault();
+
+
+
+            if (theme == null)
+            {
+                return NotFound();
+            }
+            ThemePageModel model = new()
+            {
+                Theme = new(theme),
+                Comments = _dataContext.Comments.Include(c => c.Author).OrderBy(c => c.CreatedDt).Where(c => c.DeleteDt == null && c.ThemeId == id).Select(c => new CommentViewModel(c)).ToList()
+            };
+            Guid? AuthUserId = _authUserService.GetUserId(HttpContext);
+            if (AuthUserId != null)
+            {
+                ViewData["authUser"] = new UserViewModel(_dataContext.Users.Find(AuthUserId.Value)!);
+            }
+            if (HttpContext.Session.Keys.Contains("AddCommentMessage"))
+            {
+                model.ErrorMessages =
+                    JsonSerializer.Deserialize<Dictionary<String, String?>>(
+                        HttpContext.Session.GetString("AddCommentMessage")!);
+
+
+
+                HttpContext.Session.Remove("AddCommentMessage");
+            }
+            if (HttpContext.Session.Keys.Contains("FormData"))
+            {
+                //CommentFormModel formModel = null!;
+                String? data = HttpContext.Session.GetString("FormData");
+                if (data is not null)
+                {
+                    model.FormModel = System.Text.Json.JsonSerializer
+                        .Deserialize<CommentFormModel>(data)!;
+                }
+                HttpContext.Session.Remove("FormData");
+            }
+
+            return View(model);
+        }
+
+        [HttpPost]
+        public RedirectToActionResult AddTheme(ThemeFormModel formModel)
+        {
+            var messages = _validationService.ErrorMessages(formModel);
+            foreach (var (key, message) in messages)
+            {
+                if (message != null)  // есть сообщение об ошибке
+                {
+                    HttpContext.Session.SetString(
+                        "AddThemeMessage",
+                        JsonSerializer.Serialize(messages)
+                    );
+                    return RedirectToAction(nameof(Topic), new { id = formModel.TopicId });
+                }
+            }
+            // проверяем что пользователь аутентифицирован
+            Guid? userId = _authUserService.GetUserId(HttpContext);
+            if (userId != null)
+            {
+                Guid themeId = Guid.NewGuid();
+                DateTime DT = DateTime.Now;
+                _dataContext.Themes.Add(new()
+                {
+                    Id = themeId,
+                    AuthorId = userId.Value,
+                    TopicId = formModel.TopicId,
+                    Title = formModel.Title,
+                    CreatedDt = DT,
+                });
+                _dataContext.Comments.Add(new()
+                {
+                    Id = Guid.NewGuid(),
+                    AuthorId = userId.Value,
+                    Content = formModel.Content,
+                    ThemeId = themeId,
+                    CreatedDt = DT,
+                });
+                _dataContext.SaveChanges();
+            }
+            return RedirectToAction(nameof(Topic), new { id = formModel.TopicId });
+        }
+
 
         public IActionResult Index()
         {

@@ -1,40 +1,40 @@
 ﻿<div class="card mb-3">
     <div class="row g-0">
         <div class="col-md-2">
-            <img src="@Model.ImageUrl"
+            <img src="{{imageUrl}}"
                  class="img-fluid rounded-start"
                  alt="section">
         </div>
         <div class="col-md-10 d-flex flex-column">
             <div class="card-body">
-                <h5 class="card-title">@Model.Title</h5>
-                <p class="card-text">@Model.Description</p>
-                <p class="card-text"><small class="text-muted">Created: @Model.CreateDt</small></p>
+                <h5 class="card-title">{{title}}</h5>
+                <p class="card-text">{{description}}</p>
+                <p class="card-text"><small class="text-muted">Created: {{createDt}}</small></p>
             </div>
             <div class="card-footer ms-auto" style="width:100%">
                 <div class="d-flex  align-items-center" style="gap:1em">
                     Автор:
-                    <span title="@Model.Author.Email">
+                    <span title="{{author.email}}">
                         <a asp-controller="User" asp-action="Profile">
-                            <img src="@Model.Author.Avatar" class="avatars rounded-circle" />
+                            <img src="{{author.avatar}}" class="avatars rounded-circle" />
                         </a>
-                        @Model.Author.Name
+                        {{author.name}}
                     </span>
                     <div>
                         <i class="bi bi-hand-thumbs-up"
                            role="button"
-                           data-rate-item-id="@(Model.Id)"
+                           data-rate-item-id="{{id}}"
                            data-rate-value="1"></i>
-                        <span class="rate rate-positive">@(Model.Likes)</span>
+                        <span class="rate rate-positive">{{likes}}</span>
                     </div>
                     <div>
                         <i class="bi bi-hand-thumbs-down"
                            role="button"
-                           data-rate-item-id="@(Model.Id)"
+                           data-rate-item-id="{{id}}"
                            data-rate-value="-1"></i>
-                        <span class="rate rate-negative">@(Model.Dislikes)</span>
+                        <span class="rate rate-negative">{{dislikes}}</span>
                     </div>
-                    <a class="btn btn-outline-secondary ms-auto" asp-controller="Forum" asp-action="Section" asp-route-id="@(Model.Id)"><i class="bi bi-arrow-right-square"></i></a>
+                    <a class="btn btn-outline-secondary ms-auto" asp-controller="Forum" href="#Section/{{id}}"><i class="bi bi-arrow-right-square"></i></a>
                 </div>
             </div>
         </div>
