@@ -1,4 +1,5 @@
 ﻿using ASP111.Data;
+using ASP111.Data.Entities;
 using ASP111.Models.User;
 using ASP111.Services.Email;
 using ASP111.Services.Hash;
@@ -74,20 +75,68 @@ namespace ASP111.Controllers
             return Json(new { success = true });
         }
 
-        public ViewResult Profile()
-        {
-            // находим ид пользователя из Claims
-            String? userId = HttpContext.User.Claims
-                .FirstOrDefault(c => c.Type == ClaimTypes.Sid)?.Value;
+        //[Route("Profile")]
+        //public ViewResult Profile()
+        //{
+        //    // находим ид пользователя из Claims
+        //    String? userId = HttpContext.User.Claims
+        //        .FirstOrDefault(c => c.Type == ClaimTypes.Sid)?.Value;
 
+        //    ProfileViewModel model = null!;
+        //    if (userId is not null)
+        //    {
+        //        // находим данные о пользователе по ид
+        //        var user = _dataContext.Users.Find(Guid.Parse(userId));
+        //        if (user != null)
+        //        {
+        //            model = new()
+        //            {
+        //                Name = user.Name,
+        //                Email = user.Email,
+        //                Avatar = user.Avatar ?? "no-photo.png",
+        //                CreatedDt = user.CreatedDt,
+        //                Login = user.Login,
+        //                IsEmailConfirmed = (user.ConfirmCode == null),
+        //            };
+        //        }
+        //    }
+        //    return View(model);
+        //}
+
+        //[Route("Profile/{EnterId}")]
+        //public ViewResult Profile(String EnterId){
+        //    ProfileViewModel model = null!;
+        //    if (EnterId is not null)
+        //    {
+        //        // находим данные о пользователе по ид
+        //        var user = _dataContext.Users.Find(Guid.Parse(EnterId));
+        //        if (user != null)
+        //        {
+        //            model = new()
+        //            {
+        //                Name = user.Name,
+        //                Email = user.Email,
+        //                Avatar = user.Avatar ?? "no-photo.png",
+        //                CreatedDt = user.CreatedDt,
+        //                Login = user.Login,
+        //                IsEmailConfirmed = (user.ConfirmCode == null),
+        //            };
+        //        }
+        //    }
+        //    return View(model);
+        //}
+
+        public ViewResult Profile(String id)
+        {
             ProfileViewModel model = null!;
-            if (userId is not null)
+
+            if (!String.IsNullOrEmpty(id))
             {
-                // находим данные о пользователе по ид
-                var user = _dataContext.Users.Find(Guid.Parse(userId));
+                var user = _dataContext.Users.Find(Guid.Parse(id));
+
                 if (user != null)
                 {
-                    model = new()
+                    model = new ProfileViewModel
                     {
                         Name = user.Name,
                         Email = user.Email,
@@ -98,6 +147,7 @@ namespace ASP111.Controllers
                     };
                 }
             }
+
             return View(model);
         }
         public IActionResult Index()

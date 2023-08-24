@@ -15,7 +15,7 @@
                 <div class="d-flex  align-items-center" style="gap:1em">
                     Автор:
                     <span title="{{author.email}}">
-                        <a asp-controller="User" asp-action="Profile">
+                        <a asp-controller="User" asp-action="Profile" href="#User/{{id}}">
                             <img src="{{author.avatar}}" class="avatars rounded-circle" />
                         </a>
                         <span title="Registered since: {{author.createdDt}}">
@@ -36,7 +36,7 @@
                            data-rate-value="-1"></i>
                         <span class="rate rate-negative">{{dislikes}}</span>
                     </div>
-                    <a class="btn btn-outline-secondary ms-auto" asp-controller="Forum" href="#Section/{{id}}"><i class="bi bi-arrow-right-square"></i></a>
+                    <a class="btn btn-outline-secondary ms-auto" href="#Section/{{id}}"><i class="bi bi-arrow-right-square"></i></a>
                 </div>
             </div>
         </div>

@@ -16,11 +16,11 @@
                 <div class="d-flex  align-items-center" style="gap:1em">
                     Автор:
                     <span title="@Model.Author.Email">
-                        <a asp-controller="User" asp-action="Profile">
+                        <a asp-controller="User" asp-action="Profile" asp-route-id="@Model.Author.Id">
                         <img src="@Model.Author.Avatar" class="avatars rounded-circle"/></a>
                         @Model.Author.Name
                     </span>
-                    <div>
+                    <div>   
                         <i class="bi bi-hand-thumbs-up"
                            role="button"
                            data-rate-item-id="@(Model.Id)"
