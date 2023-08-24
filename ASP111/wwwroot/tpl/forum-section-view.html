@@ -18,7 +18,9 @@
                         <a asp-controller="User" asp-action="Profile">
                             <img src="{{author.avatar}}" class="avatars rounded-circle" />
                         </a>
-                        {{author.name}}
+                        <span title="Registered since: {{author.createdDt}}">
+                            {{author.name}}
+                        </span>
                     </span>
                     <div>
                         <i class="bi bi-hand-thumbs-up"
