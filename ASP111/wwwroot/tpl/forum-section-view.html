@@ -15,7 +15,7 @@
                 <div class="d-flex  align-items-center" style="gap:1em">
                     Автор:
                     <span title="{{author.email}}">
-                        <a asp-controller="User" asp-action="Profile" href="#User/{{id}}">
+                        <a class="btn" href="#User/Profile/{{author.id}}">
                             <img src="{{author.avatar}}" class="avatars rounded-circle" />
                         </a>
                         <span title="Registered since: {{author.createdDt}}">
