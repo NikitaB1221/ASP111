@@ -94,9 +94,11 @@ function rateClick(e) {
         }
         else {
             return r.json().then(responseJson => {
-                const rateSpan = document.querySelector('.rate');
+                let rateSpan = document.querySelector('.rate');
+                let curNum = rateSpan.textContent;
                 rateSpan.textContent = responseJson.rateNum;
                 // Явно возвращаем значение responseJson.rateNum
+                curNum = null;
                 return responseJson.rateNum;
             });
         }
