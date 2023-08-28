@@ -5,9 +5,9 @@ document.addEventListener('DOMContentLoaded', () => {
             const pageBody = document.getElementById('pageBody')
             if (pageBody) {
                 pageBody.innerHTML = t;
-                loadSections();
+                onHashChanged();
             }
-            else throw "pageBody element not found";
+            else throw "DOMContentLoaded: pageBody element not found";
         })
     window.addEventListener("hashchange", onHashChanged)
 });
@@ -17,6 +17,9 @@ function onHashChanged(e) {
     const path = window.location.hash.substring(1).split('/')
     switch (path[0].toLowerCase()) {
         case 'section': loadTopics(path[1]); break;
+        case 'topic': loadThemes(path[1]); break;
+        case 'theme': loadComments(path[1]); break;
+        default: loadSections(); break;
     }
     console.log(path);
 }
@@ -27,40 +30,31 @@ function getPageContainer() {
     return container;
 }
 
+function loadThemes(topicId) {
+    const container = getPageContainer();
+    container.innerHTML = `<img src='/img/preloader.gif' alt="preloader">`;
+    fillTemplatePar3('/tpl/forum-theme-view.html', '/api/theme?topicId=' + topicId, '/tpl/forum-theme-container.html')
+        .then(content => container.innerHTML = content)
+}
+
+function loadComments(themeId) {
+    const container = getPageContainer();
+    container.innerHTML = `Comments ${themeId} coming soon!`;
+}
+
 function loadTopics(sectionId) {
     const container = getPageContainer();
-    container.innerHTML = `${sectionId} will coming soon`;
+    container.innerHTML = `<img src='/img/preloader.gif' alt="preloader">`;
+    //fillTemplatePar('/tpl/forum-topic-view.html', '/api/topic?sectionId=' + sectionId)
+    fillTemplatePar3('/tpl/forum-topic-view.html', '/api/topic?sectionId=' + sectionId, '/tpl/forum-topic-container.html')
+        .then(content => container.innerHTML = content)
 }
 
 function loadSections() {
     const container = getPageContainer();
-    fetch('/api/section', { method: 'GET' })
-        .then(r => r.json())
-        .then(j => {
-            console.log(j);
-            fetch('/tpl/forum-section-view.html')
-                .then(r => r.text())
-                .then(t => {
-                    let content = "";
-                    for (let section of j) {
-                        let item = t;  //  Template copy
-                        for (let prop in section) {
-                            if ('object' === typeof section[prop]) {
-                                for (let subprop in section[prop]) {
-                                    item = item.replaceAll(`{{${prop}.${subprop}}}`, section[prop][subprop]);
-                                }
-                            }
-                            else {
-                                item = item.replaceAll(`{{${prop}}}`, section[prop])
-                            }
-                        }
-                        content += item;
-                    }
-                    container.innerHTML = content;
-
-                })
-        }
-        );
+    container.innerHTML = `<img src='/img/preloader.gif' alt="preloader">`;
+    fillTemplatePar('/tpl/forum-section-view.html', '/api/section')
+        .then(content => container.innerHTML = content)
 }
 
 function fillTemplate(templateUrl, dataUrl) {
@@ -97,4 +91,82 @@ function fillTemplate(templateUrl, dataUrl) {
                         resolve(content);
                     })
             }));
+}
+
+function fillTemplatePar(templateUrl, dataUrl) {
+    return new Promise((resolve, reject) =>
+        Promise.all([
+            fetch(dataUrl, {
+                method: 'GET'
+            }).then(r => r.json()),
+
+            fetch(templateUrl)
+                .then(r => r.text())
+        ]).then(([j, t]) => {
+            // console.log(j);                
+            // j - данные, t - шаблон для заполнения данными
+            let content = "";
+            for (let section of j) {
+                let item = t;  // copy of template
+                for (let prop in section) {
+                    // console.log(prop + " " + typeof section[prop]);
+                    if ('object' === typeof section[prop]) {
+                        for (let subprop in section[prop]) {
+                            item = item.replaceAll(
+                                `{{${prop}.${subprop}}}`,
+                                section[prop][subprop]
+                            );
+                        }
+                    }
+                    else {
+                        item = item.replaceAll(`{{${prop}}}`, section[prop]);
+                    }
+                }
+                content += item;
+            }
+            resolve(content);
+        }));
+}
+
+function fillTemplatePar3(templateUrl, dataUrl, containerUrl) {
+    const container = getPageContainer();
+    container.innerHTML = `<img src='/img/preloader.gif' alt='preloader' />`;
+    return new Promise((resolve, reject) =>
+        Promise.all([
+            fetch(dataUrl, {
+                method: 'GET'
+            }).then(r => r.json()),
+
+            fetch(templateUrl)
+                .then(r => r.text()),
+
+            fetch(containerUrl)
+                .then(r => r.text()),
+        ]).then(([j, t, c]) => {
+            console.log(j);                
+            console.log(t);                
+            console.log(c);                
+            // j - данные, t - повторяющийся шаблон для заполнения данными, с - контейнер для заполненных шаблонов
+            let content = "";
+            for (let section of j) {
+                let item = t;  // copy of template
+                for (let prop in section) {
+                    // console.log(prop + " " + typeof section[prop]);
+                    if ('object' === typeof section[prop]) {
+                        for (let subprop in section[prop]) {
+                            item = item.replaceAll(
+                                `{{${prop}.${subprop}}}`,
+                                section[prop][subprop]
+                            );
+                        }
+                    }
+                    else {
+                        item = item.replaceAll(`{{${prop}}}`, section[prop]);
+                    }
+                }
+                content += item;
+            }
+            content = c.replaceAll('{{body}}', content);
+            resolve(content);
+        }));
 }

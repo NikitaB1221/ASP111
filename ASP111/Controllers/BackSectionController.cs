@@ -45,6 +45,7 @@ namespace ASP111.Controllers
             Dislikes = s.Rates.Count(r => r.Rating < 0)
         });
         }
+
     }
 }
 

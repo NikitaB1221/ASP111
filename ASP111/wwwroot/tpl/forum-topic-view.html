@@ -1,0 +1,26 @@
+﻿<div class="col">
+    <div class="card h-100">
+        <div class="card-header ms-auto" style="width:100%">
+            <div class="d-flex align-items-center">
+                <span>{{title}}</span>
+                <span class="ms-auto">{{createdDt}}</span>
+            </div>
+        </div>
+        <img src="{{imageUrl}}" class="w40" alt="avatar" />
+        <div class="card-body">
+            <h5 class="card-title">{{title}}</h5>
+            <p class="card-text">{{description}}</p>
+        </div>
+        <div class="card-footer ms-auto" style="width:100%">
+            <div class="d-flex align-items-center" style="gap:1em">
+                <a asp-controller="User" asp-action="Profile">
+                    <img src="{{author.avatar}}" class="avatars rounded-circle" />
+                </a>
+                <i class="bi bi-hand-thumbs-up"></i> 234
+                <i class="bi bi-hand-thumbs-down"></i> 45
+                <a class="btn btn-outline-secondary ms-auto"
+                   href="#topic/{{id}}"><i class="bi bi-arrow-right-square"></i></a>
+            </div>
+        </div>
+    </div>
+</div>
