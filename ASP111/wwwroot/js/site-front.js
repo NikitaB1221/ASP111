@@ -9,7 +9,7 @@ document.addEventListener('DOMContentLoaded', () => {
             }
             else throw "DOMContentLoaded: pageBody element not found";
         })
-    window.addEventListener("hashchange", onHashChanged)
+    window.addEventListener("hashchange", onHashChanged);
 });
 
 function onHashChanged(e) {
@@ -26,7 +26,7 @@ function onHashChanged(e) {
 
 function getPageContainer() {
     const container = document.getElementById('sections');
-    if (!container) throw " loadSection(): Container 'section' not found";
+    if (!container) throw " getPageContainer(): Container 'section' not found";
     return container;
 }
 
@@ -47,14 +47,63 @@ function loadTopics(sectionId) {
     container.innerHTML = `<img src='/img/preloader.gif' alt="preloader">`;
     //fillTemplatePar('/tpl/forum-topic-view.html', '/api/topic?sectionId=' + sectionId)
     fillTemplatePar3('/tpl/forum-topic-view.html', '/api/topic?sectionId=' + sectionId, '/tpl/forum-topic-container.html')
-        .then(content => container.innerHTML = content)
+        .then(content => {
+            container.innerHTML = content
+            const addTopicButton = document.getElementById('add-topic-button');
+            if (!addTopicButton) throw "'add-topic-button' not found";
+            addTopicButton.addEventListener('click', addTopicClick);
+        });
+}
+
+function addSectionClick() {
+    const sectionTitle = document.getElementById('section-title');
+    if (!sectionTitle) throw "addSectionClick: 'section-title' not found!"
+    const sectionDescription = document.getElementById('section-description');
+    if (!sectionDescription) throw "addSectionClick: 'section-description' not found!"
+
+    const title = sectionTitle.value;
+    const description = sectionDescription.value;
+
+    if (title.length < 1 || description.length < 1) {
+        alert("Fill all data fields");
+        return;
+    }
+
+    console.log(title + "\n" + description);
+
+    fetch('/api/section',
+        {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json; charset=utf-8'
+            },
+            body: JSON.stringify(
+                {
+                    'title': title,
+                    'description': description
+                }
+            )
+        }).then(r => r.json())
+        .then(data => {
+            if (data.message === "200") {
+                alert("Section added successfully!");
+            }
+            else {
+                alert(data.message);
+            }
+        });
 }
 
 function loadSections() {
     const container = getPageContainer();
     container.innerHTML = `<img src='/img/preloader.gif' alt="preloader">`;
-    fillTemplatePar('/tpl/forum-section-view.html', '/api/section')
-        .then(content => container.innerHTML = content)
+    fillTemplatePar3('/tpl/forum-section-view.html', '/api/section', '/tpl/forum-section-container.html')
+        .then(content => {
+            container.innerHTML = content;
+            const addSectionButton = document.getElementById('add-section-button');
+            if (!addSectionButton) throw "'add-section-button' not found";
+            addSectionButton.addEventListener('click', addSectionClick);
+        });
 }
 
 function fillTemplate(templateUrl, dataUrl) {
@@ -143,9 +192,9 @@ function fillTemplatePar3(templateUrl, dataUrl, containerUrl) {
             fetch(containerUrl)
                 .then(r => r.text()),
         ]).then(([j, t, c]) => {
-            console.log(j);                
-            console.log(t);                
-            console.log(c);                
+            //console.log(j);                
+            //console.log(t);                
+            //console.log(c);                
             // j - данные, t - повторяющийся шаблон для заполнения данными, с - контейнер для заполненных шаблонов
             let content = "";
             for (let section of j) {
