@@ -34,11 +34,11 @@ namespace ASP111.Controllers
 
             return (IEnumerable<ThemeViewModel>?)_dataContext.Themes
                 .Include(t => t.Author)
+                .Include( t => t.Comments)
                 .Where(t => t.DeleteDt == null)
                 .OrderByDescending(t => t.CreatedDt)
                 .AsEnumerable()
                 .Select(t => new ThemeViewModel(t));
         }
-
     }
 }
