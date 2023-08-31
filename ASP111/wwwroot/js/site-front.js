@@ -83,15 +83,21 @@ function addSectionClick() {
                     'description': description
                 }
             )
-        }).then(r => r.json())
+        })
+        .then(r => r.json())
         .then(data => {
             if (data.message === "200") {
                 alert("Section added successfully!");
             }
             else {
                 alert(data.message);
+                return;
             }
-        });
+    
+        })  //  .then(loadSections());  //  System.InvalidOperationException: "Cannot Open when State is Connecting."
+
+     //  loadSections();  //  System.InvalidOperationException: "Cannot Open when State is Connecting."
+
 }
 
 function loadSections() {
