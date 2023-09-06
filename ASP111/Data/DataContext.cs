@@ -12,6 +12,7 @@ namespace ASP111.Data
         public DbSet<Comment> Comments{ get; set; }
         public DbSet<Visit> Visits{ get; set; }
         public DbSet<Rate> Rates{ get; set; }
+        public DbSet<Token> Tokens { get; set; }
 
 
 
@@ -22,6 +23,7 @@ namespace ASP111.Data
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             modelBuilder.HasDefaultSchema("asp111");
+            modelBuilder.Entity<Token>().Property(t => t.Id).HasMaxLength(50).IsFixedLength();
 
             modelBuilder.Entity<Rate>().HasKey(nameof(Rate.ItemId), nameof(Rate.UserId));
 

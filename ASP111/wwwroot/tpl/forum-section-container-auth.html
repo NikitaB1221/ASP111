@@ -1,0 +1,25 @@
+﻿﻿{{body}}
+
+<form asp-action="AddSection" asp-controller="Forum"
+      method="post" enctype="multipart/form-data">
+
+    <label for="section-title" class="form-label">Title</label>
+    <div class="input-group mb-3">
+        <span class="input-group-text py-0 px-2"
+              id="section-title-addon"><i class="bi bi-chat-quote"></i></span>
+        <input type="text" class="form-control"
+               id="section-title" name="section-title"
+               placeholder="Enter section's title"
+               aria-describedby="section-title-addon">
+    </div>
+
+    <label for="section-description" class="form-label">Description</label>
+    <div class="input-group mb-3">
+        <span class="input-group-text"><i class="bi bi-book"></i></span>
+        <textarea class="form-control" aria-label="With textarea"
+                  id="section-description" name="section-description"
+                  placeholder="Enter section's description"></textarea>
+    </div>
+
+    <button type="button" class="btn btn-primary" id="add-section-button">Add</button>
+</form>

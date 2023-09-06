@@ -9,7 +9,27 @@ document.addEventListener('DOMContentLoaded', () => {
             }
             else throw "DOMContentLoaded: pageBody element not found";
         })
+
     window.addEventListener("hashchange", onHashChanged);
+    const authButton = document.getElementById("auth-button-front");
+    if (authButton) {
+        authButton.addEventListener('click', authButtonClick);
+    }
+    else {
+        console.error("Element not found: auth-button-front");
+    }
+
+    let token = getAuthToken();
+    let signIcon = document.getElementById("sign-icon");
+
+
+
+    if (token) {
+        signIcon.innerHTML = '<i class="bi bi-box-arrow-right f-large mx-3" role="button" onclick="logOut()">';
+    }
+    else {
+        signIcon.innerHTML = '<i class="bi bi-person-down f-large mx-3" role="button" data-bs-toggle="modal" data-bs-target="#authModal"></i>';
+    }
 });
 
 function onHashChanged(e) {
@@ -21,7 +41,7 @@ function onHashChanged(e) {
         case 'theme': loadComments(path[1]); break;
         default: loadSections(); break;
     }
-    console.log(path);
+    //console.log(path);
 }
 
 function getPageContainer() {
@@ -70,46 +90,60 @@ function addSectionClick() {
     }
 
     console.log(title + "\n" + description);
+    return new Promise((resolve, reject) =>
+        Promise.all([
+            fetch('/api/section', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json; charset=utf-8',
+                    // состояние авторизации передается в заголовке
+                    'Authorization': `Bearer ${getAuthToken()}`
+                },
+                body: JSON.stringify(
+                    {
+                        'title': title,
+                        'description': description
+                    }
+                )
+            })
+                .then(r => r.json())
+                .then(data => {
+                    console.log(data);
+                    if (data.statusCode === "200") {
+                        alert("Section added successfully!");
+                        resolve();
 
-    fetch('/api/section',
-        {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json; charset=utf-8'
-            },
-            body: JSON.stringify(
-                {
-                    'title': title,
-                    'description': description
-                }
-            )
-        })
-        .then(r => r.json())
-        .then(data => {
-            if (data.message === "200") {
-                alert("Section added successfully!");
-            }
-            else {
-                alert(data.message);
-                return;
-            }
-    
-        })  //  .then(loadSections());  //  System.InvalidOperationException: "Cannot Open when State is Connecting."
-
-     //  loadSections();  //  System.InvalidOperationException: "Cannot Open when State is Connecting."
-
+                    }
+                    else {
+                        alert(data.message);
+                        reject(data.message);
+                    }
+                })
+        ])
+            .then(() => loadSections())
+    );
 }
 
 function loadSections() {
+    console.log("lS: Start");
     const container = getPageContainer();
+    let token = getAuthToken();
+    let isAuth = isAuthenticated();
     container.innerHTML = `<img src='/img/preloader.gif' alt="preloader">`;
-    fillTemplatePar3('/tpl/forum-section-view.html', '/api/section', '/tpl/forum-section-container.html')
+    fillTemplatePar3('/tpl/forum-section-view.html', '/api/section',
+        isAuth
+            ? '/tpl/forum-section-container-auth.html'
+            : '/tpl/forum-section-container.html')
         .then(content => {
             container.innerHTML = content;
-            const addSectionButton = document.getElementById('add-section-button');
-            if (!addSectionButton) throw "'add-section-button' not found";
-            addSectionButton.addEventListener('click', addSectionClick);
+            if (isAuth) {
+                const addSectionButton = document.getElementById('add-section-button');
+                if (!addSectionButton) throw "'add-section-button' not found";
+                addSectionButton.addEventListener('click', addSectionClick);
+            }
         });
+    console.log("lS: End");
+
 }
 
 function fillTemplate(templateUrl, dataUrl) {
@@ -188,14 +222,14 @@ function fillTemplatePar3(templateUrl, dataUrl, containerUrl) {
     container.innerHTML = `<img src='/img/preloader.gif' alt='preloader' />`;
     return new Promise((resolve, reject) =>
         Promise.all([
-            fetch(dataUrl, {
+            fetch(dataUrl + "?rand=" + Math.random(), {
                 method: 'GET'
             }).then(r => r.json()),
 
             fetch(templateUrl)
                 .then(r => r.text()),
 
-            fetch(containerUrl)
+            fetch(containerUrl + '?rnd=' + Math.random())
                 .then(r => r.text()),
         ]).then(([j, t, c]) => {
             //console.log(j);                
@@ -223,5 +257,64 @@ function fillTemplatePar3(templateUrl, dataUrl, containerUrl) {
             }
             content = c.replaceAll('{{body}}', content);
             resolve(content);
-        }));
+        })
+    );
+}
+
+function authButtonClick() {
+    const authLogin = document.getElementById("auth-login");
+    if (!authLogin) throw "Element not found: auth-login";
+    const authPassword = document.getElementById("auth-password");
+    if (!authPassword) throw "Element not found: auth-password";
+    if (authLogin.value.length === 0) {
+        alert("You must enter your login");
+        return;
+    }
+    if (authPassword.value.length === 0) {
+        alert("You must enter your password");
+        return;
+    }
+    const body = JSON.stringify({
+        login: authLogin.value,
+        password: authPassword.value
+    });
+    console.log(body);
+    // передаем данные на сервер асинхронно
+
+    window
+        .fetch(                // отсылка запроса
+            "/api/auth", {    // URL - адрес запроса
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify({
+                login: authLogin.value,
+                password: authPassword.value
+            })
+        }
+        )
+        .then(r => r.json())   // ответ => извлечение тела как JSON Объекта
+        .then(j => {           // результат извлечения тела
+            //console.log(j);
+            if (j.id != "") {
+                localStorage.setItem('token', j.id)
+                window.location.reload();
+            }
+        });
+
+}
+
+function logOut() {
+    localStorage.removeItem("token");
+    window.location.reload();
+}
+
+function isAuthenticated() {
+    let token = localStorage.getItem("token");
+    return !!token;
+}
+
+function getAuthToken() {
+    return localStorage.getItem("token");
 }

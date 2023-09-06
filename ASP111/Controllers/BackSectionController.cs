@@ -3,6 +3,7 @@ using ASP111.Models.Forum.Index;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using System.Text.RegularExpressions;
 
 namespace ASP111.Controllers
 {
@@ -44,8 +45,28 @@ namespace ASP111.Controllers
         }
 
         [HttpPost]
-        public object AddSection([FromBody]SectionData sectionData)
+        public async Task<object> AddSectionAsync([FromBody]SectionData sectionData)
         {
+            // Данные авторизации приходят в заголовке Authorization
+            String authHeader = Request.Headers["Authorization"].ToString();
+            // Проверяем формат и извлекаем токен
+            var matches = Regex.Matches(authHeader, @"^Bearer (\w+)$");
+            if (matches.Count == 0)
+            {
+                // токена нет или он не соотв. формату
+                Response.StatusCode = StatusCodes.Status401Unauthorized;
+                return new { Message = "Unathenticated" };
+            }
+            String tokenValue = matches[0].Groups[1].Value;
+            // Проверяем токен в БД
+            Data.Entities.Token? token =
+                await _dataContext.Tokens.FindAsync(tokenValue);
+            if (token == null)
+            {
+                Response.StatusCode = StatusCodes.Status403Forbidden;
+                return new { Message = "Unathorized" };
+            }
+
             if (sectionData == null)
             {
                 Response.StatusCode = StatusCodes.Status406NotAcceptable;
@@ -69,7 +90,7 @@ namespace ASP111.Controllers
                 Title = sectionData.Title,
                 Description = sectionData.Description,
                 CreateDt = DateTime.Now,
-                AuthorId = _dataContext.Users.First().Id,
+                AuthorId = token.User,
                 DeleteDt = null
             }); 
             _dataContext.SaveChanges();

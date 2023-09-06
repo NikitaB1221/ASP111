@@ -35,7 +35,8 @@
                         </li>
                     </ul>
                 </div>
-                @* <a asp-controller="User" asp-action="SignUp"><i class="bi bi-person-add f-large"></i></a> *@
+                <div id="sign-icon"></div>
+                @* <i class="bi bi-person-down f-large mx-3" role="button" data-bs-toggle="modal" data-bs-target="#authModal"></i> *@
             </div>
         </nav>
     </header>
@@ -57,32 +58,32 @@
         <div class="modal-dialog">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h5 class="modal-title" id="authModalLabel">Автентифікація</h5>
+                    <h5 class="modal-title" id="authModalLabel">Authentication</h5>
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
                 <div class="modal-body">
-                    <label for="auth-login" class="form-label">Логін</label>
+                    <label for="auth-login" class="form-label">Login</label>
                     <div class="input-group mb-3">
                         <span class="input-group-text py-0 px-2"
                               id="auth-login-addon"><i class="bi-person fs-bi"></i></span>
                         <input type="text" class="form-control"
                                id="auth-login"
-                               placeholder="Введіть логін"
+                               placeholder="Enter login"
                                aria-describedby="auth-login-addon">
                     </div>
-                    <label for="auth-password" class="form-label">Пароль</label>
+                    <label for="auth-password" class="form-label">Password</label>
                     <div class="input-group mb-3">
                         <span class="input-group-text py-0 px-2"
                               id="auth-password-addon"><i class="bi-lock fs-bi"></i></span>
                         <input type="password" class="form-control"
                                id="auth-password" name="auth-password"
-                               placeholder="Введіть пароль"
+                               placeholder="Enter password"
                                aria-describedby="auth-password-addon">
                     </div>
                 </div>
                 <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Закрити</button>
-                    <button type="button" class="btn btn-primary" id="auth-button">Вхід</button>
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                    <button type="button" class="btn btn-primary" id="auth-button-front">Enter</button>
                 </div>
             </div>
         </div>
